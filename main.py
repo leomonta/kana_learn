@@ -1,8 +1,7 @@
 from random import shuffle
-from colorama import Fore
 from time import time
 
-hiragana = [
+HIRAGANA = [
 	"あ",	"い",	"う",	"え",	"お",
 	"か",	"き",	"く",	"け",	"こ",
 	"さ",	"し",	"す",	"せ",	"そ",
@@ -31,7 +30,7 @@ hiragana = [
 	"ぴゃ",	"ぴゅ",	"ぴょ"
 ]
 
-katakana = [
+KATAKANA = [
 	"ア",	"イ",	"ウ",	"エ",	"オ",
 	"カ",	"キ",	"ク",	"ケ",	"コ",
 	"サ",	"シ",	"ス",	"セ",	"ソ",
@@ -60,7 +59,7 @@ katakana = [
 	"ピャ",	"ピュ",	"ピョ"
 ]
 
-pronun = [
+PRONUNCIATIONS = [
 	"a",	"i",	"u",	"e",	"o",
 	"ka",	"ki",	"ku",	"ke",	"ko",
 	"sa",	"shi",	"su",	"se",	"so",
@@ -89,11 +88,50 @@ pronun = [
 	"pya",	"pyu",	"pyo"
 ]
 
+class COLS:
+	FG_BLACK   = '\033[30m'
+	FG_RED     = '\033[31m'
+	FG_GREEN   = '\033[32m'
+	FG_YELLOW  = '\033[33m'
+	FG_BLUE    = '\033[34m'
+	FG_MAGENTA = '\033[35m'
+	FG_CYAN    = '\033[36m'
+	FG_WHITE   = '\033[37m'
+
+	BG_BLACK   = '\033[40m'
+	BG_RED     = '\033[41m'
+	BG_GREEN   = '\033[42m'
+	BG_YELLOW  = '\033[43m'
+	BG_BLUE    = '\033[44m'
+	BG_MAGENTA = '\033[45m'
+	BG_CYAN    = '\033[46m'
+	BG_WHITE   = '\033[47m'
+
+	FG_BRIGHTBLACK   = '\033[90m'
+	FG_BRIGHTRED     = '\033[91m'
+	FG_BRIGHTGREEN   = '\033[92m'
+	FG_BRIGHTYELLOW  = '\033[93m'
+	FG_BRIGHTBLUE    = '\033[94m'
+	FG_BRIGHTMAGENTA = '\033[95m'
+	FG_BRIGHTCYAN    = '\033[96m'
+	FG_BRIGHTWHITE   = '\033[97m'
+
+	BG_BRIGHTBLACK   = '\033[100m'
+	BG_BRIGHTRED     = '\033[101m'
+	BG_BRIGHTGREEN   = '\033[102m'
+	BG_BRIGHTYELLOW  = '\033[103m'
+	BG_BRIGHTBLUE    = '\033[104m'
+	BG_BRIGHTMAGENTA = '\033[105m'
+	BG_BRIGHTCYAN    = '\033[106m'
+	BG_BRIGHTWHITE   = '\033[107m'
+
+	RESET         = '\033[0m'
+
 def rand_kana():
 
-	indxs = [i for i in range(len(pronun)*2)]
-	kana = hiragana + katakana
-	pron = pronun + pronun
+	indxs = [i for i in range(len(PRONUNCIATIONS)*2)]
+	kana = HIRAGANA + KATAKANA
+	pron = PRONUNCIATIONS + PRONUNCIATIONS
 
 	num_kana = len(kana)
 
@@ -111,30 +149,36 @@ def rand_kana():
 	for i in indxs:
 		counter += 1
 		start = time()
-		guess = input(f"{Fore.WHITE}{counter}) {kana[i]} :: ")
+		guess = input(f"{COLS.FG_WHITE}{counter}) {kana[i]} :: ")
 		end = time()
 
 		t_average += end-start
 
 		if guess == pron[i]:
-			print(f"{Fore.BLUE} Correct, it was {pron[i]}")
+			print(f"{COLS.FG_BLUE} Correct, it was {pron[i]}")
 			score += 1
 		else:
-			print(f"{Fore.RED} Incorrect, it was {pron[i]}")
+			print(f"{COLS.FG_RED} Incorrect, it was {pron[i]}")
 			errors.append(i)
 		
-	print(f"{Fore.WHITE}{len(errors)} Errors: {Fore.RED}")
+	print(f"{COLS.FG_WHITE}{len(errors)} Errors: {COLS.FG_RED}")
 	for i in errors:
 		print(f"{kana[i]} was {pron[i]}")
 	
-	print(f"\n{Fore.WHITE}Total score {score}/{num_kana} = {score * 100 / num_kana:.2f}% in {t_average / counter:.3}s average\n")
+	print(f"\n{COLS.FG_WHITE}Total score {score}/{num_kana} = {score * 100 / num_kana:.2f}% in {t_average / counter:.3}s average\n")
 
 
 # Main loop
-while True:
-	start = input(f"{Fore.WHITE}Modes:\n1) Random kana \n2) Random string of kana\n:: ")
-	if start == "1":
-		rand_kana()
-	elif start == "2":
-		# TODO: string of kana
-		print(2)
+def main():
+	while True:
+		choise = input(f"{COLS.FG_WHITE}Modes:\n1) Random kana \n2) Random string of kana\n:: ")
+		if choise == "1":
+			rand_kana()
+		elif choise == "2":
+			# TODO: string of kana
+			print(2)
+		elif choise == "exit":
+			quit(0)
+
+if __name__ == "__main__":
+	main()
