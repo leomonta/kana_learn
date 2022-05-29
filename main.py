@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from random import shuffle
 from time import time
 
@@ -88,97 +90,128 @@ PRONUNCIATIONS = [
 	"pya",	"pyu",	"pyo"
 ]
 
+# number of kana / pronuncuations in an array
+
+NUM_KANA = len(HIRAGANA) # 104
 class COLS:
-	FG_BLACK   = '\033[30m'
-	FG_RED     = '\033[31m'
-	FG_GREEN   = '\033[32m'
-	FG_YELLOW  = '\033[33m'
-	FG_BLUE    = '\033[34m'
-	FG_MAGENTA = '\033[35m'
-	FG_CYAN    = '\033[36m'
-	FG_WHITE   = '\033[37m'
 
-	BG_BLACK   = '\033[40m'
-	BG_RED     = '\033[41m'
-	BG_GREEN   = '\033[42m'
-	BG_YELLOW  = '\033[43m'
-	BG_BLUE    = '\033[44m'
-	BG_MAGENTA = '\033[45m'
-	BG_CYAN    = '\033[46m'
-	BG_WHITE   = '\033[47m'
+	FG_BLACK         = '\033[30m'
+	FG_RED           = '\033[31m'
+	FG_GREEN         = '\033[32m'
+	FG_YELLOW        = '\033[33m'
+	FG_BLUE          = '\033[34m'
+	FG_MAGENTA       = '\033[35m'
+	FG_CYAN          = '\033[36m'
+	FG_WHITE         = '\033[37m'
 
-	FG_BRIGHTBLACK   = '\033[90m'
-	FG_BRIGHTRED     = '\033[91m'
-	FG_BRIGHTGREEN   = '\033[92m'
-	FG_BRIGHTYELLOW  = '\033[93m'
-	FG_BRIGHTBLUE    = '\033[94m'
-	FG_BRIGHTMAGENTA = '\033[95m'
-	FG_BRIGHTCYAN    = '\033[96m'
-	FG_BRIGHTWHITE   = '\033[97m'
+	BG_BLACK         = '\033[40m'
+	BG_RED           = '\033[41m'
+	BG_GREEN         = '\033[42m'
+	BG_YELLOW        = '\033[43m'
+	BG_BLUE          = '\033[44m'
+	BG_MAGENTA       = '\033[45m'
+	BG_CYAN          = '\033[46m'
+	BG_WHITE         = '\033[47m'
 
-	BG_BRIGHTBLACK   = '\033[100m'
-	BG_BRIGHTRED     = '\033[101m'
-	BG_BRIGHTGREEN   = '\033[102m'
-	BG_BRIGHTYELLOW  = '\033[103m'
-	BG_BRIGHTBLUE    = '\033[104m'
-	BG_BRIGHTMAGENTA = '\033[105m'
-	BG_BRIGHTCYAN    = '\033[106m'
-	BG_BRIGHTWHITE   = '\033[107m'
+	FG_LIGHT_BLACK   = '\033[90m'
+	FG_LIGHT_RED     = '\033[91m'
+	FG_LIGHT_GREEN   = '\033[92m'
+	FG_LIGHT_YELLOW  = '\033[93m'
+	FG_LIGHT_BLUE    = '\033[94m'
+	FG_LIGHT_MAGENTA = '\033[95m'
+	FG_LIGHT_CYAN    = '\033[96m'
+	FG_LIGHT_WHITE   = '\033[97m'
 
-	RESET         = '\033[0m'
+	BG_LIGHT_BLACK   = '\0[i33[100m'
+	BG_LIGHT_RED     = '\033[101m'
+	BG_LIGHT_GREEN   = '\033[102m'
+	BG_LIGHT_YELLOW  = '\033[103m'
+	BG_LIGHT_BLUE    = '\033[104m'
+	BG_LIGHT_MAGENTA = '\033[105m'
+	BG_LIGHT_CYAN    = '\033[106m'
+	BG_LIGHT_WHITE   = '\033[107m'
+
+	RESET            = '\033[0m'
 
 def rand_kana():
 
+	# create an array of twice the lenght of PRONUNCIATIONS filled with integers from 0 -> 2 * len(PRONUNCIATIONS) 
+	# I use these integers as indexes for a kana
 	indxs = [i for i in range(len(PRONUNCIATIONS)*2)]
-	kana = HIRAGANA + KATAKANA
-	pron = PRONUNCIATIONS + PRONUNCIATIONS
 
-	num_kana = len(kana)
+	# I combine all the kana in a single array
+	all_kana = HIRAGANA + KATAKANA
+
+	# Idem with pronunciations since they are the same for the kana i use the same array twice
+	all_pron = PRONUNCIATIONS + PRONUNCIATIONS
+
+	num_all_kana = NUM_KANA * 2
 
 	errors = []
 
+	# number of correctly answered kanas
 	score = 0
+
+	# keep track of the number of kana answered
 	counter = 0
 
-	start, end = 0,0
+	t_start, t_end = 0, 0
 
+	# time intervals accumulator
 	t_average = 0
 
+	# randomize order
 	shuffle(indxs)
 
 	for i in indxs:
 		counter += 1
-		start = time()
-		guess = input(f"{COLS.FG_WHITE}{counter}) {kana[i]} :: ")
-		end = time()
 
-		t_average += end-start
+		# prompt the kana
+		print(f"{COLS.FG_WHITE}{counter}) {all_kana[i]} :: ", end="")
 
-		if guess == pron[i]:
-			print(f"{COLS.FG_BLUE} Correct, it was {pron[i]}")
+		# keep track of the time taken to answer
+		t_start = time()
+		guess = input()
+		t_end = time()
+
+		t_average += t_end - t_start
+
+		# since no kana translate to q i can use it as an exit command
+		if guess == "q":
+			break
+
+		# if the guess is correct update the score and print the correct answer in green
+		if guess == all_pron[i]:
+			print(f"{COLS.FG_LIGHT_GREEN} Correct, it was {all_pron[i]}")
 			score += 1
+		# if the guess is incorrect record the error and print the correct answer in red
 		else:
-			print(f"{COLS.FG_RED} Incorrect, it was {pron[i]}")
+			print(f"{COLS.FG_RED} Incorrect, it was {all_pron[i]}")
 			errors.append(i)
 		
+	# print all the errors recorded in red
 	print(f"{COLS.FG_WHITE}{len(errors)} Errors: {COLS.FG_RED}")
 	for i in errors:
-		print(f"{kana[i]} was {pron[i]}")
+		print(f"{all_kana[i]} was {all_pron[i]}")
 	
-	print(f"\n{COLS.FG_WHITE}Total score {score}/{num_kana} = {score * 100 / num_kana:.2f}% in {t_average / counter:.3}s average\n")
+	# print the score the correct percentage and the average time
+	print(f"\n{COLS.FG_WHITE}Total score {score}/{num_all_kana} = {score * 100 / num_all_kana:.2f}% in {t_average / counter:.3}s average\n")
 
 
 # Main loop
 def main():
 	while True:
-		choise = input(f"{COLS.FG_WHITE}Modes:\n1) Random kana \n2) Random string of kana\n:: ")
+		choise = input(f"{COLS.FG_WHITE}Modes:\n1) Random kana \n2) Random string of kana\n3) exit\n:: ")
 		if choise == "1":
 			rand_kana()
 		elif choise == "2":
 			# TODO: string of kana
 			print(2)
-		elif choise == "exit":
-			quit(0)
+		elif choise == "3":
+			break
+
+	print(COLS.RESET)
+	quit(0)
 
 if __name__ == "__main__":
 	main()
