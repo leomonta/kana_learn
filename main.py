@@ -136,4 +136,5 @@ while True:
 	if start == "1":
 		rand_kana()
 	elif start == "2":
+		# TODO: string of kana
 		print(2)
