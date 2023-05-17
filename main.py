@@ -32,6 +32,8 @@ HIRAGANA = [
     "ぴゃ", "ぴゅ", "ぴょ"
 ]
 
+HIRA_TSU = ["っ"]
+
 KATAKANA = [
     "ア", "イ", "ウ", "エ", "オ",
 	"カ", "キ", "ク", "ケ", "コ",
@@ -60,6 +62,8 @@ KATAKANA = [
 	"ビャ", "ビュ", "ビョ",
 	"ピャ", "ピュ", "ピョ"
 ]
+
+KATA_TSU = ["ッ"]
 
 PRONUNCIATIONS = [
     "a", "i", "u", "e", "o", "ka", "ki", "ku", "ke", "ko", "sa", "shi", "su", "se", "so", "ta", "chi", "tsu", "te",
@@ -141,7 +145,7 @@ def rand_kana() -> None:
 	t_start, t_end = 0, 0
 
 	# time intervals accumulator
-	t_average = 0
+	t_diff_sum: int = 0
 
 	# randomize order
 	shuffle(indxs)
@@ -157,7 +161,7 @@ def rand_kana() -> None:
 		guess = input()
 		t_end = time()
 
-		t_average += t_end - t_start
+		t_diff_sum += t_end - t_start
 
 		# since no kana translate to q i can use it as an exit command
 		if guess == "q":
@@ -179,7 +183,7 @@ def rand_kana() -> None:
 
 	# print the score the correct percentage and the average time
 	print(
-	    f"\n{COLS.FG_WHITE}Total score {score}/{num_all_kana} = {score * 100 / num_all_kana:.2f}% in {t_average / counter:.3}s average\n"
+	    f"\n{COLS.FG_WHITE}Total score {score}/{num_all_kana} = {score * 100 / num_all_kana:.2f}% in {t_diff_sum / counter:.3}s average\n"
 	)
 
 
@@ -194,19 +198,54 @@ def rand_kana_mult(amount: int) -> None:
 
 	sentence_len = randint(MIN_LEN, MAX_LEN)
 
-	sentence: str = ""
-	answer: str = ""
-	for i in range(sentence_len):
-		indx = randint(0, len_extended_kana - 1)
+	score: int = 0
+	t_diff_sum: int = 0
 
-		curr_kana = extended_kana[indx]
-		curr_pron = extended_pron[indx]
+	errors: [[str]] = []
 
-		sentence += curr_kana
-		answer += curr_pron
+	for num in range(amount):
 
-	print(sentence)
-	print(answer)
+		sentence: str = ""
+		answer: str = ""
+		for i in range(sentence_len):
+			indx = randint(0, len_extended_kana - 1)
+
+			curr_kana = extended_kana[indx]
+			curr_pron = extended_pron[indx]
+			sentence += curr_kana
+			answer += curr_pron
+
+		# prompt the kana
+		print(f"{COLS.FG_WHITE}{num}) {sentence} :: ", end="")
+
+		# keep track of the time taken to answer
+		t_start = time()
+		guess = input()
+		t_end = time()
+
+		t_diff_sum += t_end - t_start
+
+		# since no kana translate to q i can use it as an exit command
+		if guess == "q":
+			break
+
+		# if the guess is correct update the score and print the correct answer in green
+		if guess == answer:
+			print(f"{COLS.FG_LIGHT_GREEN} Correct, it was {answer}")
+			score += 1
+		# if the guess is incorrect record the error and print the correct answer in red
+		else:
+			print(f"{COLS.FG_RED} Incorrect, it was {answer}")
+			errors.append([sentence, answer])
+	# print all the errors recorded in red
+	print(f"{COLS.FG_WHITE}{len(errors)} Errors: {COLS.FG_RED}")
+	for i in errors:
+		print(f"{i[0]} was {i[1]}")
+
+	# print the score the correct percentage and the average time
+	print(
+	    f"\n{COLS.FG_WHITE}Total score {score}/{len_extended_kana} = {score * 100 / len_extended_kana:.2f}% in {t_diff_sum / amount:.3}s average\n"
+	)
 
 
 # Main loop
@@ -219,7 +258,7 @@ def main():
 
 			amount = input("How many sentences? \n:: ")
 
-			rand_kana_mult(amount)
+			rand_kana_mult(int(amount))
 
 		elif choise == "3":
 			break
