@@ -187,7 +187,7 @@ def rand_kana() -> None:
 	)
 
 
-def rand_kana_mult(amount: int) -> None:
+def rand_kana_mult(amount: int, sentence_len: int) -> None:
 	MIN_LEN: int = 3
 	MAX_LEN: int = 7
 
@@ -195,8 +195,6 @@ def rand_kana_mult(amount: int) -> None:
 	extended_pron = PRONUNCIATIONS + ["-"] + PRONUNCIATIONS + ["-"]
 
 	len_extended_kana: int = len(extended_kana)
-
-	sentence_len = randint(MIN_LEN, MAX_LEN)
 
 	score: int = 0
 	t_diff_sum: int = 0
@@ -244,7 +242,7 @@ def rand_kana_mult(amount: int) -> None:
 
 	# print the score the correct percentage and the average time
 	print(
-	    f"\n{COLS.FG_WHITE}Total score {score}/{len_extended_kana} = {score * 100 / len_extended_kana:.2f}% in {t_diff_sum / amount:.3}s average\n"
+	    f"\n{COLS.FG_WHITE}Total score {score}/{amount} = {score * 100 / amount:.2f}% in {t_diff_sum / amount:.3}s average\n"
 	)
 
 
@@ -256,9 +254,10 @@ def main():
 			rand_kana()
 		elif choise == "2":
 
-			amount = input("How many sentences? \n:: ")
+			amount = input("How many sentences?    \n:: ")
+			sent_len = input("How long the sentence? \n:: ")
 
-			rand_kana_mult(int(amount))
+			rand_kana_mult(int(amount), int(sent_len))
 
 		elif choise == "3":
 			break
